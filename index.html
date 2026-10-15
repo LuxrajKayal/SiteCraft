@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SiteCraft Studio — Interactive Drag & Drop Web Page Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- Top Application Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">S</div>
+      <span>SiteCraft Studio</span>
+      <span class="brand-badge">No-Code + Pop-up Inspector</span>
+    </div>
+
+    <div class="viewport-switcher">
+      <button class="vp-btn active" onclick="setViewport('desktop', this)">🖥️ Desktop</button>
+      <button class="vp-btn" onclick="setViewport('tablet', this)">📱 Tablet</button>
+      <button class="vp-btn" onclick="setViewport('mobile', this)">📲 Mobile</button>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="btn btn-amber" onclick="openPopupInspector('el-html')">⚡ Pop-up Inspector</button>
+      <button class="btn" onclick="toggleBottomDrawer()">💻 Code Drawer</button>
+      <button class="btn" onclick="openPopupInspector('app-source')">📦 App Source Code</button>
+      <button class="btn" id="previewBtn" onclick="togglePreviewMode()">👁️ Preview</button>
+      <button class="btn btn-danger" onclick="clearCanvasAll()">🗑️ Clear</button>
+      <button class="btn btn-primary" onclick="downloadExportedWebsite()">⬇️ Export HTML</button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="workspace">
+    <!-- Left Sidebar: Blocks, Starter Templates & Layers -->
+    <aside class="sidebar-left">
+      <div class="panel-tabs">
+        <button class="panel-tab active" id="tabBtnBlocks" onclick="switchLeftTab('blocks')">🧩 Blocks & Starters</button>
+        <button class="panel-tab" id="tabBtnLayers" onclick="switchLeftTab('layers')">📑 Page Layers</button>
+      </div>
+
+      <div class="sidebar-content" id="leftTabBlocks">
+        <div class="section-label">
+          <span>🔥 Interactive Pop-ups</span>
+          <span style="color:#fcd34d;">NEW</span>
+        </div>
+        <div class="blocks-grid" id="popupBlocksGrid"></div>
+
+        <div class="section-label"><span>🧱 Web Page Blocks</span></div>
+        <div class="blocks-grid" id="coreBlocksGrid"></div>
+
+        <div class="section-label"><span>🚀 Starter Templates</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn" onclick="loadStarterTemplate('landing')">✨ SaaS Landing Page (with Pop-ups)</button>
+          <button class="btn" onclick="loadStarterTemplate('portfolio')">🎨 Creator Portfolio</button>
+          <button class="btn" onclick="loadStarterTemplate('blank')">📄 Blank Canvas</button>
+        </div>
+      </div>
+
+      <div class="sidebar-content" id="leftTabLayers" style="display:none;">
+        <div class="section-label"><span>Page Structure (Click to Select)</span></div>
+        <div id="layersListContainer"></div>
+      </div>
+    </aside>
+
+    <!-- Center Visual Drag-and-Drop Canvas -->
+    <main class="canvas-area" id="canvasScrollArea">
+      <div class="canvas-frame" id="canvasFrame"></div>
+    </main>
+
+    <!-- Right Sidebar: Visual Style & JS Interactions Inspector -->
+    <aside class="sidebar-right">
+      <div class="panel-tabs">
+        <button class="panel-tab active" id="tabBtnStyle" onclick="switchRightTab('style')">🎨 Visual Style</button>
+        <button class="panel-tab" id="tabBtnJs" onclick="switchRightTab('js')">⚡ Interactions (JS)</button>
+      </div>
+
+      <div class="sidebar-content" id="rightTabStyle">
+        <div class="prop-group">
+          <div class="prop-group-title">Selected: <span id="inspTagBadge" style="color:#fcd34d;">None</span></div>
+          <div class="prop-row">
+            <label class="prop-label">Text Content (or Double-Click Canvas)</label>
+            <input type="text" class="prop-input" id="inspTextContent" oninput="applyInspectorChange()" placeholder="Edit element text..." />
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Link URL (href)</label>
+            <input type="text" class="prop-input" id="inspHref" oninput="applyInspectorChange()" placeholder="https://..." />
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Image URL (src)</label>
+            <input type="text" class="prop-input" id="inspSrc" oninput="applyInspectorChange()" placeholder="https://images.unsplash.com/..." />
+          </div>
+        </div>
+
+        <div class="prop-group">
+          <div class="prop-group-title">Colors & Typography</div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Text Color</label>
+            <div class="color-picker-wrap">
+              <input type="color" id="inspTextColor" oninput="applyInspectorChange()" />
+            </div>
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Background Color</label>
+            <div class="color-picker-wrap">
+              <input type="color" id="inspBgColor" oninput="applyInspectorChange()" />
+            </div>
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Font Size (px)</label>
+            <input type="number" class="prop-input" id="inspFontSize" style="width:80px;" oninput="applyInspectorChange()" />
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Font Weight</label>
+            <select class="prop-select" id="inspFontWeight" style="width:120px;" onchange="applyInspectorChange()">
+              <option value="400">Normal (400)</option>
+              <option value="500">Medium (500)</option>
+              <option value="600">Semi-Bold (600)</option>
+              <option value="700">Bold (700)</option>
+              <option value="800">Extra-Bold (800)</option>
+            </select>
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Alignment</label>
+            <select class="prop-select" id="inspTextAlign" style="width:120px;" onchange="applyInspectorChange()">
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="prop-group">
+          <div class="prop-group-title">Spacing & Corners</div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Padding (px)</label>
+            <input type="number" class="prop-input" id="inspPadding" style="width:80px;" oninput="applyInspectorChange()" />
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Corner Radius (px)</label>
+            <input type="number" class="prop-input" id="inspRadius" style="width:80px;" oninput="applyInspectorChange()" />
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-content" id="rightTabJs" style="display:none;">
+        <div class="prop-group">
+          <div class="prop-group-title">1-Click JS Interaction Presets</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn" onclick="applyJsPreset('alert')">💬 Show Pop-up Alert</button>
+            <button class="btn" onclick="applyJsPreset('modal')">🪟 Open Page Pop-up Modal</button>
+            <button class="btn" onclick="applyJsPreset('pulse')">✨ Toggle Scale Animation</button>
+            <button class="btn" onclick="applyJsPreset('scrollTop')">⬆️ Smooth Scroll to Top</button>
+          </div>
+        </div>
+
+        <div class="prop-group">
+          <div class="prop-group-title">Custom OnClick JavaScript</div>
+          <div class="prop-row">
+            <textarea class="prop-textarea" id="inspOnclick" placeholder="alert('Clicked!');"></textarea>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <button class="btn btn-primary" style="flex:1;" onclick="saveCustomOnclick()">💾 Save JS</button>
+            <button class="btn btn-emerald" onclick="testSelectedElementJs()">▶️ Test</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- 1. Floating Element Pop-up Menu (Appears directly above selected element) -->
+  <div class="floating-popup-menu" id="floatingPopupMenu">
+    <span class="fp-tag" id="fpTagLabel">&lt;div&gt;</span>
+    <input type="color" class="fp-color" id="fpTextColor" title="Text Color" oninput="fpQuickStyle('color', this.value)" />
+    <input type="color" class="fp-color" id="fpBgColor" title="Background Color" oninput="fpQuickStyle('backgroundColor', this.value)" />
+    <button class="fp-btn" title="Decrease Font Size" onclick="fpChangeFontSize(-2)">A-</button>
+    <button class="fp-btn" title="Increase Font Size" onclick="fpChangeFontSize(2)">A+</button>
+    <button class="fp-btn" title="Toggle Bold" onclick="fpToggleBold()"><b>B</b></button>
+    <button class="fp-btn" title="Align Left" onclick="fpQuickStyle('textAlign','left')">⬅</button>
+    <button class="fp-btn" title="Align Center" onclick="fpQuickStyle('textAlign','center')">↔</button>
+    <button class="fp-btn" title="Cycle Corner Radius" onclick="fpCycleRadius()">◜◝</button>
+    <div class="fp-divider"></div>
+    <button class="fp-btn fp-code" onclick="openPopupInspector('el-html')">🔍 Inspect HTML/CSS/JS</button>
+    <button class="fp-btn fp-js" onclick="openPopupInspector('el-js')">⚡ JS</button>
+    <div class="fp-divider"></div>
+    <button class="fp-btn" title="Move Block Up" onclick="moveSelectedBlock(-1)">↑</button>
+    <button class="fp-btn" title="Move Block Down" onclick="moveSelectedBlock(1)">↓</button>
+    <button class="fp-btn" title="Duplicate Block" onclick="duplicateSelectedBlock()">⧉</button>
+    <button class="fp-btn fp-del" title="Delete Block" onclick="deleteSelectedBlock()">✕</button>
+  </div>
+
+  <!-- 2. Right-Click Context Pop-up Menu -->
+  <div class="context-popup-menu" id="contextPopupMenu">
+    <div class="ctx-header">Pop-up Quick Actions</div>
+    <button class="ctx-item" onclick="openPopupInspector('el-html'); closeContextMenu();"><span>🔍 Inspect Element HTML/CSS</span><span>⌘I</span></button>
+    <button class="ctx-item" onclick="openPopupInspector('el-js'); closeContextMenu();"><span>⚡ Edit Element JS Behavior</span><span>JS</span></button>
+    <div class="ctx-sep"></div>
+    <button class="ctx-item" onclick="addBlockToCanvas('popupMenu'); closeContextMenu();"><span>📂 Insert Pop-up Menu Bar</span><span>+</span></button>
+    <button class="ctx-item" onclick="addBlockToCanvas('popupModal'); closeContextMenu();"><span>🪟 Insert Pop-up Modal</span><span>+</span></button>
+    <div class="ctx-sep"></div>
+    <button class="ctx-item" onclick="duplicateSelectedBlock(); closeContextMenu();"><span>⧉ Duplicate Block</span></button>
+    <button class="ctx-item" style="color:#fca5a5;" onclick="deleteSelectedBlock(); closeContextMenu();"><span>🗑️ Delete Block</span></button>
+    <div class="ctx-sep"></div>
+    <button class="ctx-item" onclick="openPopupInspector('app-source'); closeContextMenu();"><span>📦 View Builder Source Code</span></button>
+  </div>
+
+  <!-- 3. Draggable Pop-up Code Inspector & Tweaker Modal -->
+  <div class="popup-inspector-modal" id="popupInspectorModal">
+    <div class="pim-header" id="pimDragHeader">
+      <div class="pim-title">⚡ Live Pop-up HTML / CSS / JS Inspector & Tweaker <span style="font-size:11px;color:#94a3b8;font-weight:400;">(Drag header to move)</span></div>
+      <button class="btn btn-danger" onclick="closePopupInspector()">✕ Close</button>
+    </div>
+    <div class="pim-tabs">
+      <button class="pim-tab active" data-tab="el-html" onclick="switchPopupModalTab('el-html')">Selected Element HTML</button>
+      <button class="pim-tab" data-tab="el-css" onclick="switchPopupModalTab('el-css')">Selected Element CSS</button>
+      <button class="pim-tab" data-tab="el-js" onclick="switchPopupModalTab('el-js')">Element JS / Pop-up Behavior</button>
+      <button class="pim-tab" data-tab="page-html" onclick="switchPopupModalTab('page-html')">Full Page HTML</button>
+      <button class="pim-tab" data-tab="app-source" onclick="switchPopupModalTab('app-source')">Builder App Source Code</button>
+    </div>
+    <div class="pim-body">
+      <textarea class="code-editor-area" id="popupCodeTextarea" spellcheck="false"></textarea>
+      <div class="pim-footer">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="applyPopupModalCode()">✅ Apply Changes to Canvas</button>
+          <button class="btn btn-emerald" onclick="copyActivePopupCode()">📋 Copy Code</button>
+        </div>
+        <button class="btn" onclick="downloadExportedWebsite()">⬇️ Download Website (.html)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Live Code Drawer -->
+  <section class="bottom-code-drawer" id="bottomCodeDrawer">
+    <div class="drawer-header">
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" data-tab="html" onclick="switchDrawerTab('html')">Page HTML</button>
+        <button class="drawer-tab" data-tab="css" onclick="switchDrawerTab('css')">Custom CSS</button>
+        <button class="drawer-tab" data-tab="js" onclick="switchDrawerTab('js')">Custom JS</button>
+        <button class="drawer-tab" data-tab="export" onclick="switchDrawerTab('export')">Full Export HTML</button>
+        <button class="drawer-tab" data-tab="source" onclick="switchDrawerTab('source')">Builder Source Code</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-primary" onclick="applyDrawerCodeChanges()">✅ Apply to Canvas</button>
+        <button class="btn" onclick="toggleBottomDrawer()">✕ Hide Drawer</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <textarea class="drawer-textarea" id="drawerCodeTextarea" spellcheck="false"></textarea>
+    </div>
+  </section>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastBox">Action completed</div>
+
+  <script src="js/blocks.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SiteCraft Studio — Standalone Single-File Web Page Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+/* ==========================================================================
+   SiteCraft Studio — Interactive Drag-and-Drop Web Page Builder
+   Main Application Stylesheet (css/style.css)
+   ========================================================================== */
+
+:root {
+  --bg-dark: #0f172a;
+  --bg-panel: #1e293b;
+  --bg-panel-hover: #334155;
+  --bg-input: #0f172a;
+  --border-color: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-soft: rgba(99, 102, 241, 0.15);
+  --emerald: #10b981;
+  --amber: #f59e0b;
+  --danger: #ef4444;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --shadow-lg: 0 20px 45px -10px rgba(0, 0, 0, 0.55);
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-dark);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+
+/* ==========================================================================
+   Top Navigation Header
+   ========================================================================== */
+.topbar {
+  height: 56px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 12px;
+  z-index: 40;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #6366f1, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.brand-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  font-weight: 600;
+}
+
+.viewport-switcher {
+  display: flex;
+  background: var(--bg-dark);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  gap: 4px;
+}
+
+.vp-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.vp-btn.active,
+.vp-btn:hover {
+  background: var(--bg-panel);
+  color: var(--text-main);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn {
+  background: var(--bg-dark);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+}
+
+.btn:hover {
+  background: var(--bg-panel-hover);
+  border-color: #475569;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-amber {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #fcd34d;
+}
+
+.btn-amber:hover {
+  background: rgba(245, 158, 11, 0.25);
+}
+
+.btn-emerald {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #6ee7b7;
+}
+
+.btn-emerald:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
+
+.btn-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.28);
+}
+
+/* ==========================================================================
+   Main Workspace Layout (Left Sidebar + Center Canvas + Right Inspector)
+   ========================================================================== */
+.workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Left Sidebar */
+.sidebar-left {
+  width: 280px;
+  background: var(--bg-panel);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.panel-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.panel-tab {
+  flex: 1;
+  padding: 10px 6px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.panel-tab.active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin: 14px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-label:first-child {
+  margin-top: 0;
+}
+
+.blocks-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.block-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: grab;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.block-card:hover {
+  border-color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+  transform: translateY(-1px);
+}
+
+.block-card.highlight-popup {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.block-card.highlight-popup:hover {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.block-icon {
+  font-size: 20px;
+}
+
+.block-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.block-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Layer Tree */
+.layer-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.layer-item.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.layer-actions button {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 12px;
+}
+
+.layer-actions button:hover {
+  color: #fff;
+}
+
+/* ==========================================================================
+   Center Visual Canvas Area
+   ========================================================================== */
+.canvas-area {
+  flex: 1;
+  background: #0b1120;
+  background-image: radial-gradient(#1e293b 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 20px 100px;
+  position: relative;
+}
+
+.canvas-frame {
+  width: 100%;
+  max-width: 1120px;
+  min-height: 750px;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 10px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+  transition: width 0.25s ease, max-width 0.25s ease;
+  position: relative;
+  user-select: text;
+  overflow-x: hidden;
+}
+
+.canvas-frame.vp-tablet {
+  max-width: 768px;
+}
+
+.canvas-frame.vp-mobile {
+  max-width: 390px;
+}
+
+/* Canvas Blocks & Selection Outlines */
+.canvas-block {
+  position: relative;
+  transition: outline 0.12s ease;
+}
+
+body:not(.preview-mode) .canvas-block:hover {
+  outline: 2px dashed rgba(99, 102, 241, 0.55);
+  outline-offset: -2px;
+}
+
+body:not(.preview-mode) .canvas-block.selected-block {
+  outline: 2px solid #6366f1;
+  outline-offset: -2px;
+}
+
+body:not(.preview-mode) .selected-element {
+  outline: 2px solid #f59e0b !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.2) !important;
+}
+
+.canvas-block.drag-over {
+  border-top: 4px solid #6366f1 !important;
+}
+
+.empty-canvas-hint {
+  padding: 80px 24px;
+  text-align: center;
+  color: #64748b;
+  border: 2px dashed #cbd5e1;
+  margin: 32px;
+  border-radius: 12px;
+}
+
+/* ==========================================================================
+   1. Floating Element Pop-up Menu (Above Selected Element / Block)
+   ========================================================================== */
+.floating-popup-menu {
+  position: fixed;
+  z-index: 120;
+  background: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #475569;
+  border-radius: 10px;
+  padding: 6px 8px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65);
+  flex-wrap: wrap;
+  max-width: 92vw;
+}
+
+.floating-popup-menu.visible {
+  display: flex;
+}
+
+.fp-tag {
+  background: #6366f1;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.fp-divider {
+  width: 1px;
+  height: 20px;
+  background: #334155;
+  margin: 0 2px;
+}
+
+.fp-btn {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fp-btn:hover {
+  background: #334155;
+  color: #fff;
+}
+
+.fp-btn.fp-code {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fcd34d;
+}
+
+.fp-btn.fp-js {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  color: #6ee7b7;
+}
+
+.fp-btn.fp-del {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #fca5a5;
+}
+
+.fp-color {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #475569;
+  border-radius: 5px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+/* ==========================================================================
+   2. Right-Click Context Pop-up Menu
+   ========================================================================== */
+.context-popup-menu {
+  position: fixed;
+  z-index: 150;
+  width: 245px;
+  background: #0f172a;
+  border: 1px solid #475569;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.context-popup-menu.visible {
+  display: flex;
+}
+
+.ctx-header {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  padding: 5px 8px 3px;
+}
+
+.ctx-item {
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ctx-item:hover {
+  background: #1e293b;
+  color: #fff;
+}
+
+.ctx-sep {
+  height: 1px;
+  background: #334155;
+  margin: 4px 0;
+}
+
+/* ==========================================================================
+   3. Draggable Pop-up Code Inspector & Tweaker Modal
+   ========================================================================== */
+.popup-inspector-modal {
+  position: fixed;
+  top: 70px;
+  left: calc(50% - 410px);
+  width: 820px;
+  max-width: 95vw;
+  background: #0f172a;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75);
+  z-index: 200;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.popup-inspector-modal.visible {
+  display: flex;
+}
+
+.pim-header {
+  background: #1e293b;
+  padding: 11px 16px;
+  border-bottom: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: move;
+}
+
+.pim-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pim-tabs {
+  display: flex;
+  background: #0b1120;
+  border-bottom: 1px solid #334155;
+  overflow-x: auto;
+}
+
+.pim-tab {
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pim-tab.active {
+  color: #fff;
+  border-bottom-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.pim-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.code-editor-area {
+  width: 100%;
+  min-height: 290px;
+  background: #020617;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.pim-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Right Sidebar (Visual Style & JS Interaction Inspector)
+   ========================================================================== */
+.sidebar-right {
+  width: 310px;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.prop-group {
+  background: rgba(15, 23, 42, 0.45);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.prop-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #a5b4fc;
+  margin-bottom: 10px;
+  letter-spacing: 0.05em;
+}
+
+.prop-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.prop-row:last-child {
+  margin-bottom: 0;
+}
+
+.prop-row-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.prop-label {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.prop-input,
+.prop-select,
+.prop-textarea {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: var(--font-ui);
+}
+
+.prop-textarea {
+  min-height: 64px;
+  resize: vertical;
+  font-family: var(--font-mono);
+}
+
+.color-picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.color-picker-wrap input[type="color"] {
+  width: 32px;
+  height: 30px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Bottom Live Code Drawer
+   ========================================================================== */
+.bottom-code-drawer {
+  height: 290px;
+  background: #090d16;
+  border-top: 1px solid var(--border-color);
+  display: none;
+  flex-direction: column;
+  z-index: 50;
+}
+
+.bottom-code-drawer.open {
+  display: flex;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-panel);
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.drawer-tabs {
+  display: flex;
+}
+
+.drawer-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.drawer-tab.active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.drawer-body {
+  flex: 1;
+  display: flex;
+  padding: 10px 14px;
+  gap: 12px;
+}
+
+.drawer-textarea {
+  flex: 1;
+  background: #020617;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  resize: none;
+}
+
+/* Preview Mode hides editor sidebars */
+body.preview-mode .sidebar-left,
+body.preview-mode .sidebar-right,
+body.preview-mode .bottom-code-drawer,
+body.preview-mode .floating-popup-menu,
+body.preview-mode .context-popup-menu {
+  display: none !important;
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #10b981;
+  color: #052e16;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+  </style>
+</head>
+<body>
+  <!-- Top Application Bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo">S</div>
+      <span>SiteCraft Studio</span>
+      <span class="brand-badge">No-Code + Pop-up Inspector</span>
+    </div>
+
+    <div class="viewport-switcher">
+      <button class="vp-btn active" onclick="setViewport('desktop', this)">🖥️ Desktop</button>
+      <button class="vp-btn" onclick="setViewport('tablet', this)">📱 Tablet</button>
+      <button class="vp-btn" onclick="setViewport('mobile', this)">📲 Mobile</button>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="btn btn-amber" onclick="openPopupInspector('el-html')">⚡ Pop-up Inspector</button>
+      <button class="btn" onclick="toggleBottomDrawer()">💻 Code Drawer</button>
+      <button class="btn" onclick="openPopupInspector('app-source')">📦 App Source Code</button>
+      <button class="btn" id="previewBtn" onclick="togglePreviewMode()">👁️ Preview</button>
+      <button class="btn btn-danger" onclick="clearCanvasAll()">🗑️ Clear</button>
+      <button class="btn btn-primary" onclick="downloadExportedWebsite()">⬇️ Export HTML</button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="workspace">
+    <!-- Left Sidebar: Blocks, Starter Templates & Layers -->
+    <aside class="sidebar-left">
+      <div class="panel-tabs">
+        <button class="panel-tab active" id="tabBtnBlocks" onclick="switchLeftTab('blocks')">🧩 Blocks & Starters</button>
+        <button class="panel-tab" id="tabBtnLayers" onclick="switchLeftTab('layers')">📑 Page Layers</button>
+      </div>
+
+      <div class="sidebar-content" id="leftTabBlocks">
+        <div class="section-label">
+          <span>🔥 Interactive Pop-ups</span>
+          <span style="color:#fcd34d;">NEW</span>
+        </div>
+        <div class="blocks-grid" id="popupBlocksGrid"></div>
+
+        <div class="section-label"><span>🧱 Web Page Blocks</span></div>
+        <div class="blocks-grid" id="coreBlocksGrid"></div>
+
+        <div class="section-label"><span>🚀 Starter Templates</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button class="btn" onclick="loadStarterTemplate('landing')">✨ SaaS Landing Page (with Pop-ups)</button>
+          <button class="btn" onclick="loadStarterTemplate('portfolio')">🎨 Creator Portfolio</button>
+          <button class="btn" onclick="loadStarterTemplate('blank')">📄 Blank Canvas</button>
+        </div>
+      </div>
+
+      <div class="sidebar-content" id="leftTabLayers" style="display:none;">
+        <div class="section-label"><span>Page Structure (Click to Select)</span></div>
+        <div id="layersListContainer"></div>
+      </div>
+    </aside>
+
+    <!-- Center Visual Drag-and-Drop Canvas -->
+    <main class="canvas-area" id="canvasScrollArea">
+      <div class="canvas-frame" id="canvasFrame"></div>
+    </main>
+
+    <!-- Right Sidebar: Visual Style & JS Interactions Inspector -->
+    <aside class="sidebar-right">
+      <div class="panel-tabs">
+        <button class="panel-tab active" id="tabBtnStyle" onclick="switchRightTab('style')">🎨 Visual Style</button>
+        <button class="panel-tab" id="tabBtnJs" onclick="switchRightTab('js')">⚡ Interactions (JS)</button>
+      </div>
+
+      <div class="sidebar-content" id="rightTabStyle">
+        <div class="prop-group">
+          <div class="prop-group-title">Selected: <span id="inspTagBadge" style="color:#fcd34d;">None</span></div>
+          <div class="prop-row">
+            <label class="prop-label">Text Content (or Double-Click Canvas)</label>
+            <input type="text" class="prop-input" id="inspTextContent" oninput="applyInspectorChange()" placeholder="Edit element text..." />
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Link URL (href)</label>
+            <input type="text" class="prop-input" id="inspHref" oninput="applyInspectorChange()" placeholder="https://..." />
+          </div>
+          <div class="prop-row">
+            <label class="prop-label">Image URL (src)</label>
+            <input type="text" class="prop-input" id="inspSrc" oninput="applyInspectorChange()" placeholder="https://images.unsplash.com/..." />
+          </div>
+        </div>
+
+        <div class="prop-group">
+          <div class="prop-group-title">Colors & Typography</div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Text Color</label>
+            <div class="color-picker-wrap">
+              <input type="color" id="inspTextColor" oninput="applyInspectorChange()" />
+            </div>
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Background Color</label>
+            <div class="color-picker-wrap">
+              <input type="color" id="inspBgColor" oninput="applyInspectorChange()" />
+            </div>
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Font Size (px)</label>
+            <input type="number" class="prop-input" id="inspFontSize" style="width:80px;" oninput="applyInspectorChange()" />
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Font Weight</label>
+            <select class="prop-select" id="inspFontWeight" style="width:120px;" onchange="applyInspectorChange()">
+              <option value="400">Normal (400)</option>
+              <option value="500">Medium (500)</option>
+              <option value="600">Semi-Bold (600)</option>
+              <option value="700">Bold (700)</option>
+              <option value="800">Extra-Bold (800)</option>
+            </select>
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Alignment</label>
+            <select class="prop-select" id="inspTextAlign" style="width:120px;" onchange="applyInspectorChange()">
+              <option value="left">Left</option>
+              <option value="center">Center</option>
+              <option value="right">Right</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="prop-group">
+          <div class="prop-group-title">Spacing & Corners</div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Padding (px)</label>
+            <input type="number" class="prop-input" id="inspPadding" style="width:80px;" oninput="applyInspectorChange()" />
+          </div>
+          <div class="prop-row-inline">
+            <label class="prop-label">Corner Radius (px)</label>
+            <input type="number" class="prop-input" id="inspRadius" style="width:80px;" oninput="applyInspectorChange()" />
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-content" id="rightTabJs" style="display:none;">
+        <div class="prop-group">
+          <div class="prop-group-title">1-Click JS Interaction Presets</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn" onclick="applyJsPreset('alert')">💬 Show Pop-up Alert</button>
+            <button class="btn" onclick="applyJsPreset('modal')">🪟 Open Page Pop-up Modal</button>
+            <button class="btn" onclick="applyJsPreset('pulse')">✨ Toggle Scale Animation</button>
+            <button class="btn" onclick="applyJsPreset('scrollTop')">⬆️ Smooth Scroll to Top</button>
+          </div>
+        </div>
+
+        <div class="prop-group">
+          <div class="prop-group-title">Custom OnClick JavaScript</div>
+          <div class="prop-row">
+            <textarea class="prop-textarea" id="inspOnclick" placeholder="alert('Clicked!');"></textarea>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <button class="btn btn-primary" style="flex:1;" onclick="saveCustomOnclick()">💾 Save JS</button>
+            <button class="btn btn-emerald" onclick="testSelectedElementJs()">▶️ Test</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- 1. Floating Element Pop-up Menu (Appears directly above selected element) -->
+  <div class="floating-popup-menu" id="floatingPopupMenu">
+    <span class="fp-tag" id="fpTagLabel">&lt;div&gt;</span>
+    <input type="color" class="fp-color" id="fpTextColor" title="Text Color" oninput="fpQuickStyle('color', this.value)" />
+    <input type="color" class="fp-color" id="fpBgColor" title="Background Color" oninput="fpQuickStyle('backgroundColor', this.value)" />
+    <button class="fp-btn" title="Decrease Font Size" onclick="fpChangeFontSize(-2)">A-</button>
+    <button class="fp-btn" title="Increase Font Size" onclick="fpChangeFontSize(2)">A+</button>
+    <button class="fp-btn" title="Toggle Bold" onclick="fpToggleBold()"><b>B</b></button>
+    <button class="fp-btn" title="Align Left" onclick="fpQuickStyle('textAlign','left')">⬅</button>
+    <button class="fp-btn" title="Align Center" onclick="fpQuickStyle('textAlign','center')">↔</button>
+    <button class="fp-btn" title="Cycle Corner Radius" onclick="fpCycleRadius()">◜◝</button>
+    <div class="fp-divider"></div>
+    <button class="fp-btn fp-code" onclick="openPopupInspector('el-html')">🔍 Inspect HTML/CSS/JS</button>
+    <button class="fp-btn fp-js" onclick="openPopupInspector('el-js')">⚡ JS</button>
+    <div class="fp-divider"></div>
+    <button class="fp-btn" title="Move Block Up" onclick="moveSelectedBlock(-1)">↑</button>
+    <button class="fp-btn" title="Move Block Down" onclick="moveSelectedBlock(1)">↓</button>
+    <button class="fp-btn" title="Duplicate Block" onclick="duplicateSelectedBlock()">⧉</button>
+    <button class="fp-btn fp-del" title="Delete Block" onclick="deleteSelectedBlock()">✕</button>
+  </div>
+
+  <!-- 2. Right-Click Context Pop-up Menu -->
+  <div class="context-popup-menu" id="contextPopupMenu">
+    <div class="ctx-header">Pop-up Quick Actions</div>
+    <button class="ctx-item" onclick="openPopupInspector('el-html'); closeContextMenu();"><span>🔍 Inspect Element HTML/CSS</span><span>⌘I</span></button>
+    <button class="ctx-item" onclick="openPopupInspector('el-js'); closeContextMenu();"><span>⚡ Edit Element JS Behavior</span><span>JS</span></button>
+    <div class="ctx-sep"></div>
+    <button class="ctx-item" onclick="addBlockToCanvas('popupMenu'); closeContextMenu();"><span>📂 Insert Pop-up Menu Bar</span><span>+</span></button>
+    <button class="ctx-item" onclick="addBlockToCanvas('popupModal'); closeContextMenu();"><span>🪟 Insert Pop-up Modal</span><span>+</span></button>
+    <div class="ctx-sep"></div>
+    <button class="ctx-item" onclick="duplicateSelectedBlock(); closeContextMenu();"><span>⧉ Duplicate Block</span></button>
+    <button class="ctx-item" style="color:#fca5a5;" onclick="deleteSelectedBlock(); closeContextMenu();"><span>🗑️ Delete Block</span></button>
+    <div class="ctx-sep"></div>
+    <button class="ctx-item" onclick="openPopupInspector('app-source'); closeContextMenu();"><span>📦 View Builder Source Code</span></button>
+  </div>
+
+  <!-- 3. Draggable Pop-up Code Inspector & Tweaker Modal -->
+  <div class="popup-inspector-modal" id="popupInspectorModal">
+    <div class="pim-header" id="pimDragHeader">
+      <div class="pim-title">⚡ Live Pop-up HTML / CSS / JS Inspector & Tweaker <span style="font-size:11px;color:#94a3b8;font-weight:400;">(Drag header to move)</span></div>
+      <button class="btn btn-danger" onclick="closePopupInspector()">✕ Close</button>
+    </div>
+    <div class="pim-tabs">
+      <button class="pim-tab active" data-tab="el-html" onclick="switchPopupModalTab('el-html')">Selected Element HTML</button>
+      <button class="pim-tab" data-tab="el-css" onclick="switchPopupModalTab('el-css')">Selected Element CSS</button>
+      <button class="pim-tab" data-tab="el-js" onclick="switchPopupModalTab('el-js')">Element JS / Pop-up Behavior</button>
+      <button class="pim-tab" data-tab="page-html" onclick="switchPopupModalTab('page-html')">Full Page HTML</button>
+      <button class="pim-tab" data-tab="app-source" onclick="switchPopupModalTab('app-source')">Builder App Source Code</button>
+    </div>
+    <div class="pim-body">
+      <textarea class="code-editor-area" id="popupCodeTextarea" spellcheck="false"></textarea>
+      <div class="pim-footer">
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary" onclick="applyPopupModalCode()">✅ Apply Changes to Canvas</button>
+          <button class="btn btn-emerald" onclick="copyActivePopupCode()">📋 Copy Code</button>
+        </div>
+        <button class="btn" onclick="downloadExportedWebsite()">⬇️ Download Website (.html)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Live Code Drawer -->
+  <section class="bottom-code-drawer" id="bottomCodeDrawer">
+    <div class="drawer-header">
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" data-tab="html" onclick="switchDrawerTab('html')">Page HTML</button>
+        <button class="drawer-tab" data-tab="css" onclick="switchDrawerTab('css')">Custom CSS</button>
+        <button class="drawer-tab" data-tab="js" onclick="switchDrawerTab('js')">Custom JS</button>
+        <button class="drawer-tab" data-tab="export" onclick="switchDrawerTab('export')">Full Export HTML</button>
+        <button class="drawer-tab" data-tab="source" onclick="switchDrawerTab('source')">Builder Source Code</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button class="btn btn-primary" onclick="applyDrawerCodeChanges()">✅ Apply to Canvas</button>
+        <button class="btn" onclick="toggleBottomDrawer()">✕ Hide Drawer</button>
+      </div>
+    </div>
+    <div class="drawer-body">
+      <textarea class="drawer-textarea" id="drawerCodeTextarea" spellcheck="false"></textarea>
+    </div>
+  </section>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastBox">Action completed</div>
+
+  <script>
+/* ==========================================================================
+   SiteCraft Studio — Component Block Library & Starter Templates
+   (js/blocks.js)
+   ========================================================================== */
+
+window.BLOCK_LIBRARY = {
+  popupMenu: {
+    title: "Pop-up Menu Bar",
+    icon: "📂",
+    category: "popup",
+    html: `
+      <nav class="sc-popup-nav" style="background:#0f172a;color:#ffffff;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:relative;font-family:Inter,sans-serif;">
+        <div style="font-weight:800;font-size:18px;letter-spacing:-0.02em;">⚡ BrandMenu</div>
+        <div style="display:flex;align-items:center;gap:20px;">
+          <a href="#features" style="color:#cbd5e1;text-decoration:none;font-size:14px;">Features</a>
+          <div class="sc-dropdown-wrapper" style="position:relative;display:inline-block;">
+            <button type="button" onclick="const m=this.nextElementSibling; m.style.display=(m.style.display==='block'?'none':'block');" style="background:#6366f1;color:#ffffff;border:none;padding:9px 16px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">
+              Pop-up Menu ▾
+            </button>
+            <div class="sc-popup-dropdown" style="display:none;position:absolute;right:0;top:44px;min-width:210px;background:#1e293b;color:#f8fafc;border:1px solid #334155;border-radius:10px;padding:8px;box-shadow:0 16px 36px rgba(0,0,0,0.45);z-index:50;">
+              <a href="#product" style="display:block;padding:9px 12px;color:#f8fafc;text-decoration:none;border-radius:6px;font-size:13px;">🚀 Product Tour</a>
+              <a href="#pricing" style="display:block;padding:9px 12px;color:#f8fafc;text-decoration:none;border-radius:6px;font-size:13px;">💎 Pricing Plans</a>
+              <a href="#docs" style="display:block;padding:9px 12px;color:#f8fafc;text-decoration:none;border-radius:6px;font-size:13px;">📘 Documentation</a>
+              <hr style="border:none;border-top:1px solid #334155;margin:6px 0;">
+              <a href="#contact" style="display:block;padding:9px 12px;color:#fbbf24;text-decoration:none;border-radius:6px;font-size:13px;font-weight:600;">✨ Book a Demo</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    `
+  },
+
+  popupModal: {
+    title: "Pop-up Modal",
+    icon: "🪟",
+    category: "popup",
+    html: `
+      <section style="padding:48px 32px;text-align:center;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
+        <h3 style="font-size:24px;font-weight:800;color:#0f172a;margin-bottom:10px;">Interactive Pop-up Modal Component</h3>
+        <p style="color:#475569;font-size:15px;max-width:540px;margin:0 auto 20px;">Click the button below to trigger the customizable pop-up dialog box. Double-click any text inside the modal to customize it.</p>
+        <button type="button" onclick="const d=this.parentElement.querySelector('.sc-modal-backdrop'); d.style.display=(d.style.display==='none'?'flex':'none');" style="background:#4f46e5;color:#ffffff;border:none;padding:12px 24px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(79,70,229,0.3);">
+          Open Pop-up Modal ✨
+        </button>
+        <div class="sc-modal-backdrop" style="display:flex;margin-top:24px;align-items:center;justify-content:center;">
+          <div style="background:#ffffff;border:1px solid #cbd5e1;border-radius:14px;max-width:460px;width:100%;padding:28px;box-shadow:0 20px 45px rgba(15,23,42,0.16);text-align:left;position:relative;">
+            <span style="display:inline-block;background:#eef2ff;color:#4f46e5;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px;margin-bottom:10px;">LIMITED OFFER POP-UP</span>
+            <h4 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px;">Get 40% Off Pro Plan Today!</h4>
+            <p style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:18px;">Subscribe to our newsletter and unlock all premium templates, custom domains, and instant code exports.</p>
+            <div style="display:flex;gap:10px;">
+              <button type="button" onclick="alert('Claimed! Welcome aboard 🎉')" style="flex:1;background:#10b981;color:#ffffff;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer;">Claim Discount</button>
+              <button type="button" onclick="this.closest('.sc-modal-backdrop').style.display='none';" style="background:#e2e8f0;color:#1e293b;border:none;padding:10px 16px;border-radius:8px;font-weight:600;cursor:pointer;">Close</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    `
+  },
+
+  navbar: {
+    title: "Navbar",
+    icon: "🧭",
+    category: "core",
+    html: `
+      <header style="display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:#ffffff;border-bottom:1px solid #e2e8f0;">
+        <div style="font-size:20px;font-weight:800;color:#0f172a;">SiteCraft<span style="color:#6366f1;">.io</span></div>
+        <nav style="display:flex;gap:24px;align-items:center;">
+          <a href="#features" style="color:#475569;text-decoration:none;font-weight:500;font-size:14px;">Features</a>
+          <a href="#pricing" style="color:#475569;text-decoration:none;font-weight:500;font-size:14px;">Pricing</a>
+          <a href="#contact" style="color:#475569;text-decoration:none;font-weight:500;font-size:14px;">Contact</a>
+          <a href="#start" style="background:#6366f1;color:#ffffff;padding:9px 18px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">Get Started</a>
+        </nav>
+      </header>
+    `
+  },
+
+  hero: {
+    title: "Hero Section",
+    icon: "🚀",
+    category: "core",
+    html: `
+      <section style="padding:84px 40px;text-align:center;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 100%);color:#ffffff;">
+        <span style="display:inline-block;background:rgba(99,102,241,0.25);color:#a5b4fc;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:18px;border:1px solid rgba(165,180,252,0.3);">NO-CODE VISUAL WEB BUILDER</span>
+        <h1 style="font-size:48px;font-weight:800;max-width:780px;margin:0 auto 18px;line-height:1.15;letter-spacing:-0.02em;">Design & Launch Any Website Without Writing Code</h1>
+        <p style="font-size:18px;color:#cbd5e1;max-width:620px;margin:0 auto 32px;line-height:1.6;">Drag and drop blocks, customize colors and fonts visually, or open the live Pop-up Inspector to tweak HTML, CSS, and JavaScript in real time.</p>
+        <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+          <a href="#pricing" style="background:#6366f1;color:#ffffff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;box-shadow:0 10px 25px rgba(99,102,241,0.4);">Start Building Free</a>
+          <a href="#features" style="background:rgba(255,255,255,0.1);color:#ffffff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;border:1px solid rgba(255,255,255,0.2);">Explore Features</a>
+        </div>
+      </section>
+    `
+  },
+
+  features: {
+    title: "Feature Grid",
+    icon: "✨",
+    category: "core",
+    html: `
+      <section id="features" style="padding:72px 40px;background:#ffffff;color:#0f172a;">
+        <div style="text-align:center;max-width:640px;margin:0 auto 48px;">
+          <h2 style="font-size:34px;font-weight:800;margin-bottom:12px;">Everything You Need to Build Fast</h2>
+          <p style="color:#64748b;font-size:16px;">Click any card, heading, or button to customize styles or inspect its underlying code.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;max-width:1040px;margin:0 auto;">
+          <div style="padding:28px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
+            <div style="font-size:28px;margin-bottom:12px;">🎨</div>
+            <h3 style="font-size:19px;font-weight:700;margin-bottom:8px;">Visual Drag & Drop</h3>
+            <p style="color:#475569;font-size:14.5px;line-height:1.6;">Add pre-designed responsive sections and reorder them effortlessly on the visual canvas.</p>
+          </div>
+          <div style="padding:28px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
+            <div style="font-size:28px;margin-bottom:12px;">⚡</div>
+            <h3 style="font-size:19px;font-weight:700;margin-bottom:8px;">Floating Pop-up Menu</h3>
+            <p style="color:#475569;font-size:14.5px;line-height:1.6;">Click or right-click any element to tweak colors, typography, and spacing from an instant floating toolbar.</p>
+          </div>
+          <div style="padding:28px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0;">
+            <div style="font-size:28px;margin-bottom:12px;">💻</div>
+            <h3 style="font-size:19px;font-weight:700;margin-bottom:8px;">Live HTML/CSS/JS Inspector</h3>
+            <p style="color:#475569;font-size:14.5px;line-height:1.6;">Inspect and live-edit the exact HTML, CSS, and JS of any selected element or export a clean standalone file.</p>
+          </div>
+        </div>
+      </section>
+    `
+  },
+
+  pricing: {
+    title: "Pricing Cards",
+    icon: "💎",
+    category: "core",
+    html: `
+      <section id="pricing" style="padding:72px 40px;background:#f8fafc;color:#0f172a;">
+        <div style="text-align:center;max-width:600px;margin:0 auto 44px;">
+          <h2 style="font-size:34px;font-weight:800;margin-bottom:10px;">Simple, Transparent Pricing</h2>
+          <p style="color:#64748b;font-size:16px;">Start free and upgrade as your project grows.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:880px;margin:0 auto;">
+          <div style="background:#ffffff;padding:32px;border-radius:14px;border:1px solid #e2e8f0;">
+            <h3 style="font-size:20px;font-weight:700;margin-bottom:6px;">Starter</h3>
+            <div style="font-size:38px;font-weight:800;margin:14px 0;">$0<span style="font-size:15px;color:#64748b;font-weight:500;">/mo</span></div>
+            <p style="color:#64748b;font-size:14px;margin-bottom:20px;">Ideal for personal sites and quick prototypes.</p>
+            <button type="button" style="width:100%;padding:12px;border-radius:8px;border:1px solid #6366f1;background:transparent;color:#6366f1;font-weight:700;cursor:pointer;">Get Started</button>
+          </div>
+          <div style="background:#0f172a;color:#ffffff;padding:32px;border-radius:14px;border:2px solid #6366f1;box-shadow:0 20px 40px rgba(99,102,241,0.2);">
+            <h3 style="font-size:20px;font-weight:700;margin-bottom:6px;color:#a5b4fc;">Pro Creator</h3>
+            <div style="font-size:38px;font-weight:800;margin:14px 0;">$19<span style="font-size:15px;color:#94a3b8;font-weight:500;">/mo</span></div>
+            <p style="color:#cbd5e1;font-size:14px;margin-bottom:20px;">Unlimited pages, custom domains, and full code export.</p>
+            <button type="button" style="width:100%;padding:12px;border-radius:8px;border:none;background:#6366f1;color:#ffffff;font-weight:700;cursor:pointer;">Start Free Trial</button>
+          </div>
+        </div>
+      </section>
+    `
+  },
+
+  imageCard: {
+    title: "Image Showcase",
+    icon: "🖼️",
+    category: "core",
+    html: `
+      <section style="padding:64px 40px;background:#ffffff;display:flex;align-items:center;gap:40px;flex-wrap:wrap;max-width:1040px;margin:0 auto;">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80" alt="Workspace" style="flex:1;min-width:280px;max-width:480px;border-radius:14px;box-shadow:0 15px 35px rgba(0,0,0,0.12);object-fit:cover;" />
+        <div style="flex:1;min-width:280px;">
+          <h2 style="font-size:30px;font-weight:800;color:#0f172a;margin-bottom:14px;">Built for Creators & Developers Alike</h2>
+          <p style="color:#475569;font-size:16px;line-height:1.65;margin-bottom:22px;">Start visually without writing a single line of code, then open the Pop-up Inspector anytime to fine-tune semantic HTML5, modern CSS, and interactive JavaScript.</p>
+          <a href="#contact" style="display:inline-block;background:#0f172a;color:#ffffff;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:600;">Learn More →</a>
+        </div>
+      </section>
+    `
+  },
+
+  contact: {
+    title: "Contact Form",
+    icon: "✉️",
+    category: "core",
+    html: `
+      <section id="contact" style="padding:72px 40px;background:#f8fafc;color:#0f172a;">
+        <div style="max-width:520px;margin:0 auto;background:#ffffff;padding:36px;border-radius:14px;border:1px solid #e2e8f0;box-shadow:0 10px 25px rgba(0,0,0,0.04);">
+          <h2 style="font-size:26px;font-weight:800;margin-bottom:8px;">Get in Touch</h2>
+          <p style="color:#64748b;font-size:14px;margin-bottom:22px;">Have questions? Send us a message and we'll respond promptly.</p>
+          <form onsubmit="event.preventDefault(); alert('Thank you! Your message has been sent.');" style="display:flex;flex-direction:column;gap:14px;">
+            <input type="text" placeholder="Your Name" style="padding:12px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+            <input type="email" placeholder="you@example.com" style="padding:12px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;" />
+            <textarea rows="4" placeholder="How can we help?" style="padding:12px 14px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;"></textarea>
+            <button type="submit" style="background:#6366f1;color:#ffffff;border:none;padding:13px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;">Send Message</button>
+          </form>
+        </div>
+      </section>
+    `
+  },
+
+  heading: {
+    title: "Heading",
+    icon: "🔤",
+    category: "core",
+    html: `
+      <div style="padding:28px 40px;text-align:center;">
+        <h2 style="font-size:32px;font-weight:800;color:#0f172a;">Double-Click to Edit This Heading</h2>
+      </div>
+    `
+  },
+
+  paragraph: {
+    title: "Paragraph",
+    icon: "📝",
+    category: "core",
+    html: `
+      <div style="padding:18px 40px;max-width:760px;margin:0 auto;">
+        <p style="font-size:16px;line-height:1.7;color:#334155;">Double-click this paragraph to edit the text directly on the canvas, or use the floating pop-up menu above to adjust colors, font size, alignment, and custom interactions.</p>
+      </div>
+    `
+  },
+
+  button: {
+    title: "Action Button",
+    icon: "🔘",
+    category: "core",
+    html: `
+      <div style="padding:24px 40px;text-align:center;">
+        <button type="button" style="background:#6366f1;color:#ffffff;border:none;padding:13px 28px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;">Click Me</button>
+      </div>
+    `
+  },
+
+  divider: {
+    title: "Divider Line",
+    icon: "➖",
+    category: "core",
+    html: `
+      <div style="padding:20px 40px;">
+        <hr style="border:none;border-top:2px solid #e2e8f0;" />
+      </div>
+    `
+  },
+
+  footer: {
+    title: "Footer",
+    icon: "⚓",
+    category: "core",
+    html: `
+      <footer style="padding:40px;background:#0f172a;color:#94a3b8;text-align:center;font-size:14px;">
+        <p style="color:#ffffff;font-weight:700;margin-bottom:6px;">SiteCraft Studio</p>
+        <p>© 2026 SiteCraft Studio. Built visually with zero coding required.</p>
+      </footer>
+    `
+  }
+};
+
+window.STARTER_TEMPLATES = {
+  landing: ["popupMenu", "hero", "features", "popupModal", "pricing", "contact", "footer"],
+  portfolio: ["navbar", "hero", "imageCard", "features", "contact", "footer"],
+  blank: []
+};
+
+/* ==========================================================================
+   SiteCraft Studio — Core Visual Builder, Pop-up Menus & Code Inspector
+   (js/app.js)
+   ========================================================================== */
+
+let selectedBlock = null;
+let selectedElement = null;
+let customCssString = "/* Custom Page CSS — Edit here and click Apply */\n";
+let customJsString = "// Custom Page JavaScript — Runs on export & preview\nconsole.log('SiteCraft page ready!');\n";
+let activeDrawerTab = "html";
+let activeModalTab = "el-html";
+let draggedBlockType = null;
+let draggedCanvasBlock = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderSidebarBlocks();
+  loadStarterTemplate("landing");
+  setupCanvasEvents();
+  setupDraggableModal();
+});
+
+/* --------------------------------------------------------------------------
+   Render Left Sidebar Palette
+   -------------------------------------------------------------------------- */
+function renderSidebarBlocks() {
+  const popupGrid = document.getElementById("popupBlocksGrid");
+  const coreGrid = document.getElementById("coreBlocksGrid");
+  popupGrid.innerHTML = "";
+  coreGrid.innerHTML = "";
+
+  Object.entries(window.BLOCK_LIBRARY).forEach(([key, item]) => {
+    const card = document.createElement("div");
+    card.className = "block-card" + (item.category === "popup" ? " highlight-popup" : "");
+    card.draggable = true;
+    card.innerHTML = `
+      <div class="block-icon">${item.icon}</div>
+      <div class="block-title">${item.title}</div>
+      <div class="block-sub">Drag or Click</div>
+    `;
+    card.addEventListener("dragstart", (e) => {
+      draggedBlockType = key;
+      e.dataTransfer.setData("text/plain", key);
+    });
+    card.addEventListener("click", () => {
+      addBlockToCanvas(key);
+      showToast(`Added ${item.title}`);
+    });
+
+    if (item.category === "popup") {
+      popupGrid.appendChild(card);
+    } else {
+      coreGrid.appendChild(card);
+    }
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Add / Load / Manage Blocks on the Canvas
+   -------------------------------------------------------------------------- */
+function addBlockToCanvas(blockKey, insertBeforeNode = null) {
+  const def = window.BLOCK_LIBRARY[blockKey];
+  if (!def) return;
+
+  const canvas = document.getElementById("canvasFrame");
+  const emptyHint = canvas.querySelector(".empty-canvas-hint");
+  if (emptyHint) emptyHint.remove();
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "canvas-block";
+  wrapper.dataset.blockType = blockKey;
+  wrapper.dataset.blockTitle = def.title;
+  wrapper.draggable = true;
+  wrapper.innerHTML = def.html.trim();
+
+  if (insertBeforeNode) {
+    canvas.insertBefore(wrapper, insertBeforeNode);
+  } else {
+    canvas.appendChild(wrapper);
+  }
+
+  selectElement(wrapper.firstElementChild || wrapper, wrapper);
+  refreshLayersList();
+  syncCodeViews();
+}
+
+function loadStarterTemplate(templateName) {
+  const canvas = document.getElementById("canvasFrame");
+  canvas.innerHTML = "";
+  const list = window.STARTER_TEMPLATES[templateName] || [];
+  if (list.length === 0) {
+    canvas.innerHTML = `<div class="empty-canvas-hint"><h3>Blank Canvas</h3><p style="margin-top:8px;">Click or drag any block from the Left Sidebar (or right-click here) to start building your website.</p></div>`;
+    selectedBlock = null;
+    selectedElement = null;
+    hideFloatingMenu();
+    refreshLayersList();
+    syncCodeViews();
+    return;
+  }
+  list.forEach((key) => addBlockToCanvas(key));
+  showToast(`Loaded ${templateName.toUpperCase()} template`);
+}
+
+function clearCanvasAll() {
+  if (!confirm("Clear all blocks from the canvas?")) return;
+  loadStarterTemplate("blank");
+}
+
+/* --------------------------------------------------------------------------
+   Canvas Click, Double-Click Inline Editing, Drag-and-Drop & Right-Click
+   -------------------------------------------------------------------------- */
+function setupCanvasEvents() {
+  const canvas = document.getElementById("canvasFrame");
+  const scrollArea = document.getElementById("canvasScrollArea");
+
+  canvas.addEventListener("click", (e) => {
+    if (document.body.classList.contains("preview-mode")) return;
+
+    const block = e.target.closest(".canvas-block");
+    if (!block) return;
+
+    // Prevent navigation when clicking links in editor mode
+    if (e.target.tagName === "A") {
+      e.preventDefault();
+    }
+
+    const targetEl = e.target === block ? (block.firstElementChild || block) : e.target;
+    selectElement(targetEl, block);
+  });
+
+  // Double-click any text element to edit inline
+  canvas.addEventListener("dblclick", (e) => {
+    if (document.body.classList.contains("preview-mode")) return;
+    const target = e.target;
+    if (target && target !== canvas && !target.classList.contains("canvas-block")) {
+      target.contentEditable = "true";
+      target.focus();
+      showToast("Inline editing active — click outside when done");
+      const finishEdit = () => {
+        target.removeAttribute("contenteditable");
+        target.removeEventListener("blur", finishEdit);
+        syncInspectorInputs();
+        syncCodeViews();
+      };
+      target.addEventListener("blur", finishEdit);
+    }
+  });
+
+  // Right-click Context Pop-up Menu on Canvas
+  canvas.addEventListener("contextmenu", (e) => {
+    if (document.body.classList.contains("preview-mode")) return;
+    e.preventDefault();
+    const block = e.target.closest(".canvas-block");
+    if (block) {
+      const targetEl = e.target === block ? (block.firstElementChild || block) : e.target;
+      selectElement(targetEl, block);
+    }
+    openContextMenu(e.clientX, e.clientY);
+  });
+
+  // Hide Context Menu when clicking elsewhere
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#contextPopupMenu")) {
+      closeContextMenu();
+    }
+  });
+
+  // Reposition floating menu on scroll/resize
+  scrollArea.addEventListener("scroll", () => updateFloatingMenuPosition());
+  window.addEventListener("resize", () => updateFloatingMenuPosition());
+
+  // Drag and Drop reordering & palette drop
+  canvas.addEventListener("dragstart", (e) => {
+    const block = e.target.closest(".canvas-block");
+    if (block) {
+      draggedCanvasBlock = block;
+      draggedBlockType = null;
+    }
+  });
+
+  canvas.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    const overBlock = e.target.closest(".canvas-block");
+    canvas.querySelectorAll(".canvas-block").forEach((b) => b.classList.remove("drag-over"));
+    if (overBlock && overBlock !== draggedCanvasBlock) {
+      overBlock.classList.add("drag-over");
+    }
+  });
+
+  canvas.addEventListener("dragleave", (e) => {
+    const overBlock = e.target.closest(".canvas-block");
+    if (overBlock) overBlock.classList.remove("drag-over");
+  });
+
+  canvas.addEventListener("drop", (e) => {
+    e.preventDefault();
+    canvas.querySelectorAll(".canvas-block").forEach((b) => b.classList.remove("drag-over"));
+    const overBlock = e.target.closest(".canvas-block");
+
+    if (draggedBlockType) {
+      addBlockToCanvas(draggedBlockType, overBlock || null);
+      draggedBlockType = null;
+    } else if (draggedCanvasBlock) {
+      if (overBlock && overBlock !== draggedCanvasBlock) {
+        canvas.insertBefore(draggedCanvasBlock, overBlock);
+      } else if (!overBlock) {
+        canvas.appendChild(draggedCanvasBlock);
+      }
+      draggedCanvasBlock = null;
+      refreshLayersList();
+      syncCodeViews();
+      updateFloatingMenuPosition();
+    }
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Select Element & Position Floating Pop-up Menu
+   -------------------------------------------------------------------------- */
+function selectElement(el, block) {
+  document.querySelectorAll(".selected-element").forEach((node) => node.classList.remove("selected-element"));
+  document.querySelectorAll(".selected-block").forEach((node) => node.classList.remove("selected-block"));
+
+  selectedElement = el;
+  selectedBlock = block || (el ? el.closest(".canvas-block") : null);
+
+  if (selectedBlock) selectedBlock.classList.add("selected-block");
+  if (selectedElement) selectedElement.classList.add("selected-element");
+
+  updateFloatingMenuPosition();
+  syncInspectorInputs();
+  refreshLayersList();
+  syncCodeViews();
+}
+
+function updateFloatingMenuPosition() {
+  const menu = document.getElementById("floatingPopupMenu");
+  if (!selectedElement || document.body.classList.contains("preview-mode")) {
+    menu.classList.remove("visible");
+    return;
+  }
+
+  const rect = selectedElement.getBoundingClientRect();
+  menu.classList.add("visible");
+  document.getElementById("fpTagLabel").textContent = `<${selectedElement.tagName.toLowerCase()}>`;
+
+  const computed = window.getComputedStyle(selectedElement);
+  document.getElementById("fpTextColor").value = rgbToHex(computed.color);
+  document.getElementById("fpBgColor").value = rgbToHex(computed.backgroundColor);
+
+  let top = rect.top - menu.offsetHeight - 10;
+  if (top < 64) {
+    top = rect.bottom + 10;
+  }
+  let left = Math.max(16, Math.min(rect.left, window.innerWidth - menu.offsetWidth - 16));
+
+  menu.style.top = `${top}px`;
+  menu.style.left = `${left}px`;
+}
+
+function hideFloatingMenu() {
+  document.getElementById("floatingPopupMenu").classList.remove("visible");
+}
+
+/* --------------------------------------------------------------------------
+   Quick Actions from Floating Pop-up Menu & Right-Click Menu
+   -------------------------------------------------------------------------- */
+function fpQuickStyle(prop, val) {
+  if (!selectedElement) return;
+  selectedElement.style[prop] = val;
+  syncInspectorInputs();
+  syncCodeViews();
+}
+
+function fpChangeFontSize(delta) {
+  if (!selectedElement) return;
+  const current = parseFloat(window.getComputedStyle(selectedElement).fontSize) || 16;
+  selectedElement.style.fontSize = `${Math.max(10, current + delta)}px`;
+  syncInspectorInputs();
+  syncCodeViews();
+}
+
+function fpToggleBold() {
+  if (!selectedElement) return;
+  const w = window.getComputedStyle(selectedElement).fontWeight;
+  selectedElement.style.fontWeight = (w === "700" || w === "800" || w === "bold") ? "400" : "700";
+  syncInspectorInputs();
+  syncCodeViews();
+}
+
+function fpCycleRadius() {
+  if (!selectedElement) return;
+  const radii = ["0px", "8px", "16px", "999px"];
+  const cur = selectedElement.style.borderRadius || "0px";
+  const next = radii[(radii.indexOf(cur) + 1) % radii.length];
+  selectedElement.style.borderRadius = next;
+  syncInspectorInputs();
+  syncCodeViews();
+}
+
+function moveSelectedBlock(dir) {
+  if (!selectedBlock) return;
+  const parent = selectedBlock.parentNode;
+  if (dir === -1 && selectedBlock.previousElementSibling) {
+    parent.insertBefore(selectedBlock, selectedBlock.previousElementSibling);
+  } else if (dir === 1 && selectedBlock.nextElementSibling) {
+    parent.insertBefore(selectedBlock.nextElementSibling, selectedBlock);
+  }
+  updateFloatingMenuPosition();
+  refreshLayersList();
+  syncCodeViews();
+}
+
+function duplicateSelectedBlock() {
+  if (!selectedBlock) return;
+  const clone = selectedBlock.cloneNode(true);
+  clone.classList.remove("selected-block");
+  clone.querySelectorAll(".selected-element").forEach((n) => n.classList.remove("selected-element"));
+  selectedBlock.parentNode.insertBefore(clone, selectedBlock.nextSibling);
+  selectElement(clone.firstElementChild || clone, clone);
+  showToast("Block duplicated");
+}
+
+function deleteSelectedBlock() {
+  if (!selectedBlock) return;
+  selectedBlock.remove();
+  selectedBlock = null;
+  selectedElement = null;
+  hideFloatingMenu();
+  refreshLayersList();
+  syncCodeViews();
+  showToast("Block deleted");
+}
+
+/* --------------------------------------------------------------------------
+   Right-Click Context Pop-up Menu
+   -------------------------------------------------------------------------- */
+function openContextMenu(x, y) {
+  const menu = document.getElementById("contextPopupMenu");
+  menu.classList.add("visible");
+  const maxX = window.innerWidth - menu.offsetWidth - 12;
+  const maxY = window.innerHeight - menu.offsetHeight - 12;
+  menu.style.left = `${Math.min(x, maxX)}px`;
+  menu.style.top = `${Math.min(y, maxY)}px`;
+}
+
+function closeContextMenu() {
+  document.getElementById("contextPopupMenu").classList.remove("visible");
+}
+
+/* --------------------------------------------------------------------------
+   Right Sidebar Inspector Synchronization
+   -------------------------------------------------------------------------- */
+function syncInspectorInputs() {
+  if (!selectedElement) return;
+  const cs = window.getComputedStyle(selectedElement);
+
+  document.getElementById("inspTagBadge").textContent = `<${selectedElement.tagName.toLowerCase()}>`;
+  document.getElementById("inspTextContent").value = selectedElement.children.length === 0 ? selectedElement.textContent.trim() : "";
+  document.getElementById("inspHref").value = selectedElement.getAttribute("href") || "";
+  document.getElementById("inspSrc").value = selectedElement.getAttribute("src") || "";
+
+  document.getElementById("inspTextColor").value = rgbToHex(cs.color);
+  document.getElementById("inspBgColor").value = rgbToHex(cs.backgroundColor);
+  document.getElementById("inspFontSize").value = parseInt(cs.fontSize, 10) || 16;
+  document.getElementById("inspFontWeight").value = cs.fontWeight || "400";
+  document.getElementById("inspTextAlign").value = cs.textAlign || "left";
+  document.getElementById("inspPadding").value = parseInt(cs.paddingTop, 10) || 0;
+  document.getElementById("inspRadius").value = parseInt(cs.borderRadius, 10) || 0;
+  document.getElementById("inspOnclick").value = selectedElement.getAttribute("onclick") || "";
+}
+
+function applyInspectorChange() {
+  if (!selectedElement) return;
+
+  const txt = document.getElementById("inspTextContent").value;
+  if (selectedElement.children.length === 0 && txt !== "") {
+    selectedElement.textContent = txt;
+  }
+
+  const href = document.getElementById("inspHref").value.trim();
+  if (href && selectedElement.tagName === "A") {
+    selectedElement.setAttribute("href", href);
+  }
+
+  const src = document.getElementById("inspSrc").value.trim();
+  if (src && selectedElement.tagName === "IMG") {
+    selectedElement.setAttribute("src", src);
+  }
+
+  selectedElement.style.color = document.getElementById("inspTextColor").value;
+  selectedElement.style.backgroundColor = document.getElementById("inspBgColor").value;
+  selectedElement.style.fontSize = `${document.getElementById("inspFontSize").value}px`;
+  selectedElement.style.fontWeight = document.getElementById("inspFontWeight").value;
+  selectedElement.style.textAlign = document.getElementById("inspTextAlign").value;
+  selectedElement.style.padding = `${document.getElementById("inspPadding").value}px`;
+  selectedElement.style.borderRadius = `${document.getElementById("inspRadius").value}px`;
+
+  updateFloatingMenuPosition();
+  syncCodeViews();
+}
+
+function applyJsPreset(preset) {
+  if (!selectedElement) {
+    showToast("Select an element on the canvas first!");
+    return;
+  }
+  const snippets = {
+    alert: "alert('Hello from your custom interactive element! 🎉');",
+    modal: "const m=document.querySelector('.sc-modal-backdrop'); if(m){m.style.display='flex';}else{alert('Pop-up triggered! Add a Pop-up Modal block from the left sidebar.');}",
+    pulse: "this.style.transition='transform 0.25s'; this.style.transform=(this.style.transform==='scale(1.08)'?'scale(1)':'scale(1.08)');",
+    scrollTop: "window.scrollTo({top:0,behavior:'smooth'});"
+  };
+  const code = snippets[preset] || "";
+  selectedElement.setAttribute("onclick", code);
+  document.getElementById("inspOnclick").value = code;
+  syncCodeViews();
+  showToast("Attached JavaScript click interaction!");
+}
+
+function saveCustomOnclick() {
+  if (!selectedElement) return;
+  const code = document.getElementById("inspOnclick").value.trim();
+  if (code) {
+    selectedElement.setAttribute("onclick", code);
+  } else {
+    selectedElement.removeAttribute("onclick");
+  }
+  syncCodeViews();
+  showToast("Updated element onclick JS");
+}
+
+function testSelectedElementJs() {
+  if (!selectedElement) return;
+  const code = selectedElement.getAttribute("onclick");
+  if (!code) {
+    showToast("No onclick JS set on this element yet");
+    return;
+  }
+  try {
+    new Function(code).call(selectedElement);
+  } catch (err) {
+    alert("JS Error: " + err.message);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Layers Tree Panel
+   -------------------------------------------------------------------------- */
+function refreshLayersList() {
+  const container = document.getElementById("layersListContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  const blocks = document.querySelectorAll("#canvasFrame .canvas-block");
+  blocks.forEach((blk, idx) => {
+    const item = document.createElement("div");
+    item.className = "layer-item" + (blk === selectedBlock ? " active" : "");
+    item.innerHTML = `
+      <span>#${idx + 1} ${blk.dataset.blockTitle || blk.dataset.blockType || "Section"}</span>
+      <div class="layer-actions">
+        <button type="button" title="Move Up">↑</button>
+        <button type="button" title="Move Down">↓</button>
+      </div>
+    `;
+    item.addEventListener("click", () => selectElement(blk.firstElementChild || blk, blk));
+    const [upBtn, downBtn] = item.querySelectorAll("button");
+    upBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectElement(blk.firstElementChild || blk, blk);
+      moveSelectedBlock(-1);
+    });
+    downBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      selectElement(blk.firstElementChild || blk, blk);
+      moveSelectedBlock(1);
+    });
+    container.appendChild(item);
+  });
+}
+
+/* --------------------------------------------------------------------------
+   3. Centered Draggable Pop-up Code Inspector & Tweaker Modal
+   -------------------------------------------------------------------------- */
+function openPopupInspector(tab = "el-html") {
+  const modal = document.getElementById("popupInspectorModal");
+  modal.classList.add("visible");
+  switchPopupModalTab(tab);
+}
+
+function closePopupInspector() {
+  document.getElementById("popupInspectorModal").classList.remove("visible");
+}
+
+function switchPopupModalTab(tab) {
+  activeModalTab = tab;
+  document.querySelectorAll(".pim-tab").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.tab === tab);
+  });
+  syncCodeViews();
+}
+
+function applyPopupModalCode() {
+  const editor = document.getElementById("popupCodeTextarea");
+  const val = editor.value;
+
+  if (activeModalTab === "el-html") {
+    if (!selectedElement) return;
+    const temp = document.createElement("div");
+    temp.innerHTML = val.trim();
+    const newEl = temp.firstElementChild;
+    if (newEl && selectedElement.parentNode) {
+      selectedElement.parentNode.replaceChild(newEl, selectedElement);
+      selectElement(newEl, selectedBlock);
+      showToast("Applied Element HTML changes!");
+    }
+  } else if (activeModalTab === "el-css") {
+    if (!selectedElement) return;
+    selectedElement.setAttribute("style", val.replace(/\n/g, " ").trim());
+    syncInspectorInputs();
+    updateFloatingMenuPosition();
+    showToast("Applied Element inline CSS!");
+  } else if (activeModalTab === "el-js") {
+    if (!selectedElement) return;
+    selectedElement.setAttribute("onclick", val.trim());
+    syncInspectorInputs();
+    showToast("Applied Element JavaScript!");
+  } else if (activeModalTab === "page-html") {
+    applyRawCanvasHtml(val);
+    showToast("Updated Full Canvas HTML!");
+  }
+  syncCodeViews();
+}
+
+function setupDraggableModal() {
+  const modal = document.getElementById("popupInspectorModal");
+  const header = document.getElementById("pimDragHeader");
+  let isDown = false;
+  let offsetX = 0;
+  let offsetY = 0;
+
+  header.addEventListener("mousedown", (e) => {
+    if (e.target.tagName === "BUTTON") return;
+    isDown = true;
+    const rect = modal.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDown) return;
+    modal.style.left = `${Math.max(10, e.clientX - offsetX)}px`;
+    modal.style.top = `${Math.max(10, e.clientY - offsetY)}px`;
+  });
+
+  document.addEventListener("mouseup", () => {
+    isDown = false;
+  });
+}
+
+/* --------------------------------------------------------------------------
+   Bottom Live Code Drawer & Two-Way Code Sync
+   -------------------------------------------------------------------------- */
+function toggleBottomDrawer() {
+  const drawer = document.getElementById("bottomCodeDrawer");
+  drawer.classList.toggle("open");
+  syncCodeViews();
+}
+
+function switchDrawerTab(tab) {
+  activeDrawerTab = tab;
+  document.querySelectorAll(".drawer-tab").forEach((b) => {
+    b.classList.toggle("active", b.dataset.tab === tab);
+  });
+  syncCodeViews();
+}
+
+function getCleanCanvasHtml() {
+  const clone = document.getElementById("canvasFrame").cloneNode(true);
+  clone.querySelectorAll(".selected-element").forEach((n) => n.classList.remove("selected-element"));
+  clone.querySelectorAll(".selected-block").forEach((n) => n.classList.remove("selected-block"));
+  let out = "";
+  clone.querySelectorAll(".canvas-block").forEach((blk) => {
+    out += blk.innerHTML.trim() + "\n\n";
+  });
+  return out.trim();
+}
+
+function getFullExportedHtml() {
+  const bodyContent = getCleanCanvasHtml();
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My SiteCraft Website</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: #0f172a; background: #ffffff; }
+    ${customCssString}
+  </style>
+</head>
+<body>
+${bodyContent}
+  <script>
+    ${customJsString}
+  <\/script>
+</body>
+</html>`;
+}
+
+function getBuilderAppSourceCode() {
+  return "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+}
+
+function syncCodeViews() {
+  // Bottom drawer
+  const drawerArea = document.getElementById("drawerCodeTextarea");
+  if (drawerArea) {
+    if (activeDrawerTab === "html") drawerArea.value = getCleanCanvasHtml();
+    else if (activeDrawerTab === "css") drawerArea.value = customCssString;
+    else if (activeDrawerTab === "js") drawerArea.value = customJsString;
+    else if (activeDrawerTab === "export") drawerArea.value = getFullExportedHtml();
+    else if (activeDrawerTab === "source") drawerArea.value = getBuilderAppSourceCode();
+  }
+
+  // Pop-up modal
+  const modalArea = document.getElementById("popupCodeTextarea");
+  if (modalArea && document.getElementById("popupInspectorModal").classList.contains("visible")) {
+    if (activeModalTab === "el-html") {
+      if (selectedElement) {
+        const clone = selectedElement.cloneNode(true);
+        clone.classList.remove("selected-element");
+        modalArea.value = clone.outerHTML;
+      } else {
+        modalArea.value = "<!-- Select any element on the canvas to inspect its HTML -->";
+      }
+    } else if (activeModalTab === "el-css") {
+      modalArea.value = selectedElement ? (selectedElement.getAttribute("style") || "").split(";").map(s => s.trim()).filter(Boolean).join(";\n") : "";
+    } else if (activeModalTab === "el-js") {
+      modalArea.value = selectedElement ? (selectedElement.getAttribute("onclick") || "// Example: alert('Clicked!')") : "";
+    } else if (activeModalTab === "page-html") {
+      modalArea.value = getCleanCanvasHtml();
+    } else if (activeModalTab === "app-source") {
+      modalArea.value = getBuilderAppSourceCode();
+    }
+  }
+}
+
+function applyRawCanvasHtml(rawHtml) {
+  const canvas = document.getElementById("canvasFrame");
+  const temp = document.createElement("div");
+  temp.innerHTML = rawHtml;
+  canvas.innerHTML = "";
+  Array.from(temp.children).forEach((child) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "canvas-block";
+    wrapper.dataset.blockTitle = child.tagName;
+    wrapper.draggable = true;
+    wrapper.appendChild(child);
+    canvas.appendChild(wrapper);
+  });
+  refreshLayersList();
+}
+
+function applyDrawerCodeChanges() {
+  const val = document.getElementById("drawerCodeTextarea").value;
+  if (activeDrawerTab === "html") {
+    applyRawCanvasHtml(val);
+    showToast("Synced HTML to Visual Canvas!");
+  } else if (activeDrawerTab === "css") {
+    customCssString = val;
+    let styleTag = document.getElementById("customUserStyleTag");
+    if (!styleTag) {
+      styleTag = document.createElement("style");
+      styleTag.id = "customUserStyleTag";
+      document.head.appendChild(styleTag);
+    }
+    styleTag.textContent = customCssString;
+    showToast("Applied Custom Page CSS!");
+  } else if (activeDrawerTab === "js") {
+    customJsString = val;
+    try {
+      new Function(customJsString)();
+      showToast("Executed Custom Page JS!");
+    } catch (e) {
+      alert("JS Error: " + e.message);
+    }
+  }
+}
+
+/* --------------------------------------------------------------------------
+   UI Helpers (Tabs, Viewport, Preview, Export, Color Conversion)
+   -------------------------------------------------------------------------- */
+function switchLeftTab(tabName) {
+  document.getElementById("leftTabBlocks").style.display = tabName === "blocks" ? "block" : "none";
+  document.getElementById("leftTabLayers").style.display = tabName === "layers" ? "block" : "none";
+  document.getElementById("tabBtnBlocks").classList.toggle("active", tabName === "blocks");
+  document.getElementById("tabBtnLayers").classList.toggle("active", tabName === "layers");
+}
+
+function switchRightTab(tabName) {
+  document.getElementById("rightTabStyle").style.display = tabName === "style" ? "block" : "none";
+  document.getElementById("rightTabJs").style.display = tabName === "js" ? "block" : "none";
+  document.getElementById("tabBtnStyle").classList.toggle("active", tabName === "style");
+  document.getElementById("tabBtnJs").classList.toggle("active", tabName === "js");
+}
+
+function setViewport(mode, btn) {
+  const frame = document.getElementById("canvasFrame");
+  frame.classList.remove("vp-tablet", "vp-mobile");
+  if (mode === "tablet") frame.classList.add("vp-tablet");
+  if (mode === "mobile") frame.classList.add("vp-mobile");
+  document.querySelectorAll(".vp-btn").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  setTimeout(updateFloatingMenuPosition, 260);
+}
+
+function togglePreviewMode() {
+  document.body.classList.toggle("preview-mode");
+  const isPrev = document.body.classList.contains("preview-mode");
+  document.getElementById("previewBtn").textContent = isPrev ? "✏️ Exit Preview" : "👁️ Preview";
+  showToast(isPrev ? "Preview Mode enabled — test your page interactively" : "Returned to Visual Editor");
+}
+
+function downloadExportedWebsite() {
+  const html = getFullExportedHtml();
+  const blob = new Blob([html], { type: "text/html" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "my-website.html";
+  a.click();
+  showToast("Downloaded my-website.html!");
+}
+
+function copyActivePopupCode() {
+  const area = document.getElementById("popupCodeTextarea");
+  navigator.clipboard.writeText(area.value);
+  showToast("Copied code to clipboard!");
+}
+
+function rgbToHex(rgb) {
+  if (!rgb || rgb === "transparent" || rgb === "rgba(0, 0, 0, 0)") return "#ffffff";
+  const m = rgb.match(/\d+/g);
+  if (!m || m.length < 3) return "#000000";
+  return "#" + m.slice(0, 3).map((x) => parseInt(x, 10).toString(16).padStart(2, "0")).join("");
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toastBox");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+  </script>
+</body>
+</html>
